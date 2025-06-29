@@ -5,9 +5,22 @@ import { fetchData } from './api';
 
 function App() {
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = () => {
-    fetchData(query);
+  const handleSearch = async () => {
+    setLoading(true);
+    setError(null);
+    setResults(null);
+    try {
+      const data = await fetchData(query);
+      setResults(data);
+    } catch (err) {
+      setError('Search failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -26,9 +39,19 @@ function App() {
             placeholder="Search..."
             value={query}
             onChange={e => setQuery(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+            disabled={loading}
           />
-          <button onClick={handleSearch}>Search</button>
+          <button onClick={handleSearch} disabled={loading || !query.trim()}>
+            {loading ? 'Searching...' : 'Search'}
+          </button>
         </div>
+        {error && <div className="error">{error}</div>}
+        {results && (
+          <div className="results">
+            <pre>{JSON.stringify(results, null, 2)}</pre>
+          </div>
+        )}
       </div>
 
       <div className="triangle-right"></div>
