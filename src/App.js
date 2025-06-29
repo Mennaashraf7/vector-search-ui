@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import { FaSearch } from 'react-icons/fa';
+import { fetchData } from './api';
 
 function App() {
+  const [query, setQuery] = useState("");
+
+  const handleSearch = () => {
+    fetchData(query);
+  };
+
   return (
     <div className="container">
       <img src="/logo.jpg" alt="Logo" className="logo" />
@@ -14,8 +21,13 @@ function App() {
           <div className="icon">
             <FaSearch />
           </div>
-          <input type="text" placeholder="Search..." />
-          <button>Search</button>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+          />
+          <button onClick={handleSearch}>Search</button>
         </div>
       </div>
 
